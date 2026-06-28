@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Quiniela Mundial 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Inter:wght@400;500;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g:#1B5E20;--gm:#2E7D32;--gl:#E8F5E9;
+  --gold:#F9A825;--goldd:#F57F17;
+  --bg:#EEF2EE;--card:#fff;--txt:#1A1A1A;
+  --mu:#6B7280;--brd:#E0E7E0;--r:8px;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+
+/* HEADER */
+.hdr{background:linear-gradient(135deg,#1B5E20,#388E3C);color:#fff;text-align:center;padding:26px 16px 22px}
+.hdr-ico{font-size:40px;display:block;margin-bottom:7px}
+.hdr h1{font-family:'Oswald',sans-serif;font-size:24px;font-weight:700;letter-spacing:1px}
+.hdr p{font-size:12px;opacity:.75;margin-top:4px}
+
+/* NOMBRE */
+.nm-wrap{max-width:460px;margin:14px auto 0;padding:0 14px}
+.nm-card{background:#fff;border-radius:var(--r);padding:12px 15px;border:1.5px solid var(--brd);display:flex;align-items:center;gap:9px}
+.nm-card input{flex:1;border:none;outline:none;font-size:15px;font-family:'Inter',sans-serif;color:var(--txt);background:transparent}
+.nm-card input::placeholder{color:#bbb}
+
+/* PROGRESS */
+.prog-wrap{max-width:460px;margin:10px auto 0;padding:0 14px}
+.prog-bar{height:3px;background:var(--brd);border-radius:3px;overflow:hidden;margin-bottom:4px}
+.prog-fill{height:100%;background:var(--gm);border-radius:3px;transition:width .3s}
+.prog-lbl{font-size:11px;color:var(--mu);text-align:center}
+
+/* RULES TOGGLE */
+.rules-wrap{max-width:460px;margin:10px auto 0;padding:0 14px}
+.rules-toggle{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:10px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600;color:var(--mu)}
+.rules-toggle:hover{background:#f9f9f9}
+.rules-body{display:none;background:#fff;border:1.5px solid var(--brd);border-top:none;border-radius:0 0 var(--r) var(--r);padding:12px 14px}
+.rules-body.open{display:block}
+.rule-row{display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:12px;color:var(--mu);border-bottom:1px solid #f0f0f0}
+.rule-row:last-child{border-bottom:none}
+.rule-pts{font-size:11px;font-weight:700;color:var(--goldd);background:#FFF8E1;padding:2px 6px;border-radius:10px;flex-shrink:0;min-width:30px;text-align:center}
+
+/* BRACKET SCROLL */
+.bk-scroll{overflow-x:auto;padding:18px 10px 10px;-webkit-overflow-scrolling:touch}
+.bk-scroll::-webkit-scrollbar{height:4px}
+.bk-scroll::-webkit-scrollbar-thumb{background:#ccc;border-radius:4px}
+.bk-grid{display:flex;align-items:flex-start;gap:0;min-width:1020px}
+
+/* COLUMN */
+.col{flex:1;min-width:106px;display:flex;flex-direction:column}
+.col-ctr{flex:0.75;min-width:94px}
+.col-hdr{font-family:'Oswald',sans-serif;font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--mu);text-align:center;padding:0 3px 8px;border-bottom:2px solid var(--brd);white-space:nowrap}
+.col-hdr.hfin{color:var(--goldd)}
+.col-body{display:flex;flex-direction:column;height:640px}
+
+/* SLOT */
+.slot{flex:1;display:flex;flex-direction:column;justify-content:center;padding:4px 3px;position:relative}
+
+/* MATCH CARD */
+.mc{background:#fff;border-radius:var(--r);border:1.5px solid var(--brd);overflow:hidden;cursor:pointer;transition:border-color .15s}
+.mc:hover{border-color:#94a3b8}
+.mc.done{border-color:var(--gm)}
+.mc.is-final{border-color:var(--gold);box-shadow:0 0 0 2px rgba(249,168,37,.18)}
+.mc.is-third{border-color:#9E9E9E}
+.mc-lbl{font-size:9px;color:#bbb;text-align:center;padding:2px 0;letter-spacing:.4px}
+
+/* TEAM ROW */
+.tr{display:flex;align-items:center;gap:5px;padding:6px 7px;min-height:33px;border-bottom:1px solid var(--brd);transition:background .1s;cursor:pointer;position:relative}
+.tr:last-of-type{border-bottom:none}
+.tr:hover{background:var(--gl)}
+.tr.won{background:var(--gl)}
+.tr.won .tnm{font-weight:600;color:var(--g)}
+.tr.won::after{content:'✓';position:absolute;right:6px;font-size:10px;color:var(--gm);font-weight:700}
+.tr.lost{opacity:.42}
+.tfl{font-size:15px;flex-shrink:0;line-height:1}
+.tnm{font-size:11px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.tnm.tbd{color:#ccc;font-style:italic}
+.tsc{font-size:12px;font-weight:700;min-width:14px;text-align:right;flex-shrink:0}
+.pen-note{font-size:9px;color:var(--goldd);text-align:center;padding:2px 0;background:#FFF8E1}
+
+/* PANEL */
+.panel{display:none;border:1.5px solid var(--gm);border-radius:var(--r);padding:12px;margin-top:5px;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.1);position:relative;z-index:20}
+.panel.open{display:block}
+.panel h4{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--mu);margin-bottom:9px}
+.si-row{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.si-team{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.si-team .sfl{font-size:20px}
+.si-team .snm{font-size:10px;font-weight:600;text-align:center;color:var(--txt)}
+.si-team input{width:48px;height:46px;text-align:center;font-size:21px;font-weight:700;border:2px solid var(--brd);border-radius:7px;outline:none;font-family:'Oswald',sans-serif;-moz-appearance:textfield;transition:border-color .15s}
+.si-team input::-webkit-inner-spin-button,.si-team input::-webkit-outer-spin-button{-webkit-appearance:none}
+.si-team input:focus{border-color:var(--gm)}
+.si-sep{font-size:20px;font-weight:700;color:#ccc}
+.pen-row{display:none;flex-direction:column;gap:5px;margin-bottom:8px}
+.pen-row.show{display:flex}
+.pen-row p{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--mu)}
+.pen-btns{display:flex;gap:5px}
+.pbtn{flex:1;padding:7px 3px;border:1.5px solid var(--brd);border-radius:6px;background:#fff;font-size:10px;font-weight:600;cursor:pointer;transition:all .12s;color:var(--txt);text-align:center}
+.pbtn.sel{border-color:var(--goldd);background:#FFF8E1;color:var(--goldd)}
+.pa-row{display:flex;gap:5px}
+.btn-ok{flex:1;padding:9px;background:var(--g);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif}
+.btn-ok:hover{background:var(--gm)}
+.btn-cx{padding:9px 12px;background:var(--bg);color:var(--mu);border:1.5px solid var(--brd);border-radius:6px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif}
+
+/* THIRD ROW */
+.third-row{min-width:1020px;display:flex;justify-content:center;padding:10px 0 4px}
+.third-inner{width:100px;display:flex;flex-direction:column}
+.third-hdr{font-family:'Oswald',sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#9E9E9E;text-align:center;padding:0 3px 8px;border-bottom:2px solid var(--brd);margin-bottom:4px}
+
+/* CHAMPION */
+.champ{display:none;max-width:300px;margin:12px auto 16px;padding:0 14px}
+.champ.show{display:block}
+.champ-inner{background:linear-gradient(135deg,#F9A825,#F57F17);border-radius:12px;padding:18px;text-align:center;color:#fff;box-shadow:0 4px 20px rgba(249,168,37,.35)}
+.champ-inner .ico{font-size:36px;display:block;margin-bottom:5px}
+.champ-inner h2{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1px;opacity:.85;margin-bottom:3px}
+.champ-name{font-family:'Oswald',sans-serif;font-size:22px;font-weight:700}
+
+/* ACTION BUTTONS */
+.actions-wrap{max-width:460px;margin:0 auto 10px;padding:0 14px;display:flex;gap:8px}
+.btn-wa{flex:1;padding:13px;background:#25D366;color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-wa:hover{background:#1ebe5d}
+.btn-pdf{flex:1;padding:13px;background:var(--g);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-pdf:hover{background:var(--gm)}
+
+/* MODAL */
+.ovl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-end;justify-content:center}
+.ovl.vis{display:flex}
+.msheet{background:#fff;border-radius:18px 18px 0 0;padding:22px 18px 36px;width:100%;max-width:460px}
+.msheet h2{font-family:'Oswald',sans-serif;font-size:19px;margin-bottom:5px;text-align:center}
+.msheet p{font-size:13px;color:var(--mu);margin-bottom:16px;line-height:1.5;text-align:center}
+.mbtns{display:flex;flex-direction:column;gap:7px}
+.mbtn{padding:12px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px}
+.mbtn.wa{background:#25D366;color:#fff}
+.mbtn.pdf{background:var(--g);color:#fff}
+.mbtn.s{background:var(--bg);color:var(--txt);border:1.5px solid var(--brd)}
+
+/* ═══════════════════════════════
+   PDF PRINT STYLES
+═══════════════════════════════ */
+@media print {
+  body{background:#fff;font-family:'Inter',Helvetica,sans-serif}
+  .hdr,.nm-wrap,.prog-wrap,.rules-wrap,.bk-scroll,.actions-wrap,.champ,.ovl{display:none!important}
+  .pdf-page{display:block!important}
+}
+.pdf-page{display:none}
+
+/* PDF page layout */
+.pdf-header{text-align:center;padding:20px 0 14px;border-bottom:3px solid #1B5E20;margin-bottom:16px}
+.pdf-header .ph-ball{font-size:32px;display:block;margin-bottom:4px}
+.pdf-header h1{font-family:'Oswald',sans-serif;font-size:22px;color:#1B5E20;letter-spacing:1px}
+.pdf-header .ph-sub{font-size:12px;color:#666;margin-top:3px}
+.pdf-meta{display:flex;justify-content:space-between;align-items:center;background:#f5f5f5;border-radius:6px;padding:10px 14px;margin-bottom:16px;font-size:13px}
+.pdf-meta strong{color:#1B5E20}
+
+.pdf-section{margin-bottom:18px}
+.pdf-section-title{font-family:'Oswald',sans-serif;font-size:13px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:#1B5E20;border-bottom:1.5px solid #1B5E20;padding-bottom:4px;margin-bottom:8px}
+
+.pdf-table{width:100%;border-collapse:collapse;font-size:11px}
+.pdf-table th{background:#1B5E20;color:#fff;padding:6px 8px;text-align:left;font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:.5px}
+.pdf-table td{padding:6px 8px;border-bottom:1px solid #eee;vertical-align:middle}
+.pdf-table tr:nth-child(even) td{background:#f9f9f9}
+.pdf-table .td-flag{font-size:14px;text-align:center;width:22px}
+.pdf-table .td-team{font-weight:600}
+.pdf-table .td-score{text-align:center;font-weight:700;color:#1B5E20;font-family:'Oswald',sans-serif;font-size:13px;width:40px}
+.pdf-table .td-vs{text-align:center;color:#aaa;width:20px}
+.pdf-table .td-winner{color:#1B5E20;font-weight:600}
+.pdf-table .td-pen{color:#F57F17;font-size:10px;font-style:italic}
+.pdf-table .td-blank{color:#ccc;font-style:italic}
+
+.pdf-rules{background:#FFF8E1;border-left:3px solid #F9A825;padding:10px 14px;border-radius:0 6px 6px 0;font-size:11px;margin-bottom:16px}
+.pdf-rules h3{font-family:'Oswald',sans-serif;font-size:12px;color:#F57F17;margin-bottom:6px;letter-spacing:.5px}
+.pdf-rules li{color:#555;margin-bottom:3px;padding-left:4px}
+
+.pdf-footer{text-align:center;font-size:10px;color:#aaa;border-top:1px solid #eee;padding-top:10px;margin-top:10px}
+</style>
+</head>
+<body>
+
+<!-- ═══════ WEB UI ═══════ -->
+<div class="hdr">
+  <span class="hdr-ico">⚽</span>
+  <h1>QUINIELA MUNDIAL 2026</h1>
+  <p>Toca cualquier partido para ingresar tu predicción</p>
+</div>
+
+<div class="nm-wrap">
+  <div class="nm-card">
+    <span>👤</span>
+    <input type="text" id="nombre" placeholder="Tu nombre..." autocomplete="name">
+  </div>
+</div>
+
+<div class="prog-wrap">
+  <div class="prog-bar"><div class="prog-fill" id="pf" style="width:0%"></div></div>
+  <div class="prog-lbl" id="pl">0 / 31 partidos completados</div>
+</div>
+
+<!-- RULES ACCORDION -->
+<div class="rules-wrap">
+  <div class="rules-toggle" onclick="toggleRules()">
+    <span>📋 Reglas de puntuación</span>
+    <span id="rules-arrow">▼</span>
+  </div>
+  <div class="rules-body" id="rules-body">
+    <div class="rule-row"><span class="rule-pts">3 pts</span><span>Marcador exacto (goles correctos de ambos equipos)</span></div>
+    <div class="rule-row"><span class="rule-pts">1 pt</span><span>Solo aciertas el ganador (marcador diferente)</span></div>
+    <div class="rule-row"><span class="rule-pts">3 pts</span><span>Empate exacto (mismo marcador de empate)</span></div>
+    <div class="rule-row"><span class="rule-pts">1 pt</span><span>Empate correcto pero marcador diferente</span></div>
+    <div class="rule-row"><span class="rule-pts">+1 pt</span><span>Aciertas quién gana en penaltis</span></div>
+    <div class="rule-row"><span class="rule-pts">5 pts</span><span>Llave exacta: los dos equipos que avanzan de una misma llave a la siguiente ronda</span></div>
+  </div>
+</div>
+
+<div class="bk-scroll" id="bk-root"></div>
+
+<div class="champ" id="champ">
+  <div class="champ-inner">
+    <span class="ico">🏆</span>
+    <h2>CAMPEÓN MUNDIAL 2026</h2>
+    <div class="champ-name" id="champ-name"></div>
+  </div>
+</div>
+
+<div class="actions-wrap">
+  <button class="btn-wa" onclick="onWA()">📱 WhatsApp</button>
+  <button class="btn-pdf" onclick="onPDF()">📄 Exportar PDF</button>
+</div>
+
+<!-- MODAL -->
+<div class="ovl" id="ovl">
+  <div class="msheet">
+    <h2>🎉 ¡Quiniela lista!</h2>
+    <p id="modal-p">Elige cómo compartir tu quiniela.</p>
+    <div class="mbtns">
+      <button class="mbtn wa" onclick="doWA()">📱 Compartir por WhatsApp</button>
+      <button class="mbtn pdf" onclick="doPDF()">📄 Descargar PDF</button>
+      <button class="mbtn s" onclick="closeOvl()">Seguir editando</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ PDF PAGE (shown only on print) ═══════ -->
+<div class="pdf-page" id="pdf-page">
+  <div class="pdf-header">
+    <span class="ph-ball">⚽</span>
+    <h1>QUINIELA MUNDIAL 2026</h1>
+    <div class="ph-sub">Fase Eliminatoria Completa</div>
+  </div>
+  <div class="pdf-meta">
+    <div>👤 Participante: <strong id="pdf-nombre">—</strong></div>
+    <div>📅 Fecha: <strong id="pdf-fecha">—</strong></div>
+    <div>✅ Completado: <strong id="pdf-progreso">—</strong></div>
+  </div>
+  <div class="pdf-rules">
+    <h3>REGLAS DE PUNTUACIÓN</h3>
+    <ul>
+      <li><strong>3 pts</strong> — Marcador exacto &nbsp;|&nbsp; <strong>1 pt</strong> — Solo ganador correcto</li>
+      <li><strong>3 pts</strong> — Empate exacto &nbsp;|&nbsp; <strong>1 pt</strong> — Empate correcto, marcador diferente</li>
+      <li><strong>+1 pt</strong> — Aciertas ganador de penaltis &nbsp;|&nbsp; <strong>5 pts</strong> — Llave exacta (ambos equipos que avanzan)</li>
+    </ul>
+  </div>
+  <div id="pdf-content"></div>
+  <div class="pdf-footer">Quiniela Mundial 2026 · Generado el <span id="pdf-fecha2"></span></div>
+</div>
+
+<script>
+// ── TEAMS ──
+const T = {
+  GER:{n:'Alemania',    f:'🇩🇪'}, PAR:{n:'Paraguay',    f:'🇵🇾'},
+  FRA:{n:'Francia',     f:'🇫🇷'}, SWE:{n:'Suecia',      f:'🇸🇪'},
+  RSA:{n:'Sudáfrica',   f:'🇿🇦'}, CAN:{n:'Canadá',      f:'🇨🇦'},
+  NED:{n:'Países Bajos',f:'🇳🇱'}, MAR:{n:'Marruecos',   f:'🇲🇦'},
+  POR:{n:'Portugal',    f:'🇵🇹'}, CRO:{n:'Croacia',     f:'🇭🇷'},
+  ESP:{n:'España',      f:'🇪🇸'}, AUT:{n:'Austria',     f:'🇦🇹'},
+  USA:{n:'EE.UU.',      f:'🇺🇸'}, BIH:{n:'Bosnia-Herz.',f:'🇧🇦'},
+  BEL:{n:'Bélgica',     f:'🇧🇪'}, SEN:{n:'Senegal',     f:'🇸🇳'},
+  BRA:{n:'Brasil',      f:'🇧🇷'}, JPN:{n:'Japón',       f:'🇯🇵'},
+  CIV:{n:'Costa Marfil',f:'🇨🇮'}, NOR:{n:'Noruega',     f:'🇳🇴'},
+  MEX:{n:'México',      f:'🇲🇽'}, ECU:{n:'Ecuador',     f:'🇪🇨'},
+  ENG:{n:'Inglaterra',  f:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'}, COD:{n:'RD. Congo',    f:'🇨🇩'},
+  ARG:{n:'Argentina',   f:'🇦🇷'}, CPV:{n:'Cabo Verde',  f:'🇨🇻'},
+  AUS:{n:'Australia',   f:'🇦🇺'}, EGY:{n:'Egipto',      f:'🇪🇬'},
+  SUI:{n:'Suiza',       f:'🇨🇭'}, DZA:{n:'Argelia',     f:'🇩🇿'},
+  COL:{n:'Colombia',    f:'🇨🇴'}, GHA:{n:'Ghana',       f:'🇬🇭'},
+  '?':{n:'Por definir', f:'🏳️'},
+};
+function gt(c){ return T[c]||T['?']; }
+
+// ── MATCH STRUCTURE ──
+// Left half: r01-r08 → o1-o4 → q1-q2 → s1
+// Right half: r09-r16 → o5-o8 → q3-q4 → s2
+// Final: s1 vs s2 | 3rd: loser(s1) vs loser(s2)
+
+const MATCHES = {
+  // Ronda 32 — Left
+  r01:{h:'GER',a:'PAR'}, r02:{h:'FRA',a:'SWE'},
+  r03:{h:'RSA',a:'CAN'}, r04:{h:'NED',a:'MAR'},
+  r05:{h:'POR',a:'CRO'}, r06:{h:'ESP',a:'AUT'},
+  r07:{h:'USA',a:'BIH'}, r08:{h:'BEL',a:'SEN'},
+  // Ronda 32 — Right
+  r09:{h:'BRA',a:'JPN'}, r10:{h:'CIV',a:'NOR'},
+  r11:{h:'MEX',a:'ECU'}, r12:{h:'ENG',a:'COD'},
+  r13:{h:'ARG',a:'CPV'}, r14:{h:'AUS',a:'EGY'},
+  r15:{h:'SUI',a:'DZA'}, r16:{h:'COL',a:'GHA'},
+  // Octavos (R16)
+  o1:{sa:'r01',sb:'r02'}, o2:{sa:'r03',sb:'r04'},
+  o3:{sa:'r05',sb:'r06'}, o4:{sa:'r07',sb:'r08'},
+  o5:{sa:'r09',sb:'r10'}, o6:{sa:'r11',sb:'r12'},
+  o7:{sa:'r13',sb:'r14'}, o8:{sa:'r15',sb:'r16'},
+  // Cuartos
+  q1:{sa:'o1',sb:'o2'}, q2:{sa:'o3',sb:'o4'},
+  q3:{sa:'o5',sb:'o6'}, q4:{sa:'o7',sb:'o8'},
+  // Semis
+  s1:{sa:'q1',sb:'q2'}, s2:{sa:'q3',sb:'q4'},
+  // Final & 3rd
+  fin:{sa:'s1',sb:'s2',isFinal:true},
+  '3rd':{loserA:'s1',loserB:'s2',isThird:true},
+};
+
+// Column layout
+const COLS = [
+  {label:'Ronda 32', ids:['r01','r02','r03','r04','r05','r06','r07','r08']},
+  {label:'Octavos',  ids:['o1','o2','o3','o4']},
+  {label:'Cuartos',  ids:['q1','q2']},
+  {label:'Semis',    ids:['s1']},
+  {label:'Final',    ids:['fin'], center:true},
+  {label:'Semis',    ids:['s2']},
+  {label:'Cuartos',  ids:['q3','q4']},
+  {label:'Octavos',  ids:['o5','o6','o7','o8']},
+  {label:'Ronda 32', ids:['r09','r10','r11','r12','r13','r14','r15','r16']},
+];
+
+// Section labels for PDF
+const PDF_SECTIONS = [
+  {label:'Ronda de 32 — Lado Izquierdo', ids:['r01','r02','r03','r04','r05','r06','r07','r08']},
+  {label:'Ronda de 32 — Lado Derecho',   ids:['r09','r10','r11','r12','r13','r14','r15','r16']},
+  {label:'Octavos de Final',             ids:['o1','o2','o3','o4','o5','o6','o7','o8']},
+  {label:'Cuartos de Final',             ids:['q1','q2','q3','q4']},
+  {label:'Semifinales',                  ids:['s1','s2']},
+  {label:'3er y 4to Lugar',             ids:['3rd']},
+  {label:'Gran Final',                   ids:['fin']},
+];
+
+// ── STATE ──
+const RES = {};
+let _penSide = {};
+let activePanel = null;
+
+function getH(id) {
+  const m=MATCHES[id]; if(!m) return '?';
+  if(m.h!==undefined) return m.h;
+  if(m.sa) return RES[m.sa]?.w||null;
+  if(m.loserA){ const r=RES[m.loserA]; if(!r) return null; return r.w===getH(m.loserA)?getA(m.loserA):getH_base(m.loserA); }
+  return null;
+}
+function getA(id) {
+  const m=MATCHES[id]; if(!m) return '?';
+  if(m.a!==undefined) return m.a;
+  if(m.sb) return RES[m.sb]?.w||null;
+  if(m.loserB){ const r=RES[m.loserB]; if(!r) return null; return r.w===getH(m.loserB)?getA_base(m.loserB):getH(m.loserB); }
+  return null;
+}
+function getH_base(id){ const m=MATCHES[id]; if(!m) return null; if(m.h!==undefined) return m.h; if(m.sa) return RES[m.sa]?.w||null; return null; }
+function getA_base(id){ const m=MATCHES[id]; if(!m) return null; if(m.a!==undefined) return m.a; if(m.sb) return RES[m.sb]?.w||null; return null; }
+
+// ── RENDER ──
+function render() {
+  const root=document.getElementById('bk-root');
+  root.innerHTML='';
+  const grid=document.createElement('div'); grid.className='bk-grid';
+  const H=640;
+
+  COLS.forEach(col=>{
+    const colEl=document.createElement('div');
+    colEl.className='col'+(col.center?' col-ctr':'');
+    const hdr=document.createElement('div');
+    hdr.className='col-hdr'+(col.center?' hfin':'');
+    hdr.textContent=col.label;
+    colEl.appendChild(hdr);
+    const body=document.createElement('div');
+    body.className='col-body'; body.style.height=H+'px';
+    col.ids.forEach(id=>{
+      const slot=document.createElement('div'); slot.className='slot';
+      slot.appendChild(buildCard(id));
+      slot.appendChild(buildPanel(id));
+      body.appendChild(slot);
+    });
+    colEl.appendChild(body);
+    grid.appendChild(colEl);
+  });
+  root.appendChild(grid);
+
+  // Third place
+  const tRow=document.createElement('div'); tRow.className='third-row';
+  const tInner=document.createElement('div'); tInner.className='third-inner';
+  const tHdr=document.createElement('div'); tHdr.className='third-hdr'; tHdr.textContent='3° y 4° Lugar';
+  tInner.appendChild(tHdr);
+  tInner.appendChild(buildCard('3rd'));
+  tInner.appendChild(buildPanel('3rd'));
+  tRow.appendChild(tInner); root.appendChild(tRow);
+
+  updateProgress(); updateChamp();
+}
+
+function buildCard(id) {
+  const m=MATCHES[id];
+  const hC=getH(id), aC=getA(id);
+  const hT=gt(hC), aT=gt(aC);
+  const res=RES[id];
+  const hWon=res&&res.w===hC, aWon=res&&res.w===aC;
+  const isTh=!hC||hC==='?', isTa=!aC||aC==='?';
+
+  const card=document.createElement('div');
+  card.className='mc'+(res?' done':'')+(m?.isFinal?' is-final':'')+(m?.isThird?' is-third':'');
+  card.id='mc-'+id;
+
+  const lbl=document.createElement('div'); lbl.className='mc-lbl';
+  lbl.textContent=id.toUpperCase(); card.appendChild(lbl);
+
+  const trH=document.createElement('div');
+  trH.className='tr'+(hWon?' won':'')+(aWon?' lost':'');
+  trH.onclick=()=>openPanel(id);
+  trH.innerHTML=`<span class="tfl">${hT.f}</span><span class="tnm${isTh?' tbd':''}">${isTh?'—':hT.n}</span>${res?`<span class="tsc">${res.sH}</span>`:''}`;
+  card.appendChild(trH);
+
+  const trA=document.createElement('div');
+  trA.className='tr'+(aWon?' won':'')+(hWon?' lost':'');
+  trA.onclick=()=>openPanel(id);
+  trA.innerHTML=`<span class="tfl">${aT.f}</span><span class="tnm${isTa?' tbd':''}">${isTa?'—':aT.n}</span>${res?`<span class="tsc">${res.sA}</span>`:''}`;
+  card.appendChild(trA);
+
+  if(res?.pen){
+    const pn=document.createElement('div'); pn.className='pen-note';
+    pn.textContent='Pen: '+gt(res.w).n; card.appendChild(pn);
+  }
+  return card;
+}
+
+function buildPanel(id) {
+  const hC=getH(id), aC=getA(id);
+  const hT=gt(hC), aT=gt(aC);
+  const res=RES[id]||{};
+  const panel=document.createElement('div');
+  panel.className='panel'; panel.id='panel-'+id;
+  panel.innerHTML=`
+    <h4>Marcador final</h4>
+    <div class="si-row">
+      <div class="si-team"><span class="sfl">${hT.f}</span><span class="snm">${hT.n}</span>
+        <input type="number" min="0" max="20" id="sH-${id}" value="${res.sH??''}" placeholder="0" oninput="chkEmp('${id}')">
+      </div>
+      <span class="si-sep">:</span>
+      <div class="si-team"><span class="sfl">${aT.f}</span><span class="snm">${aT.n}</span>
+        <input type="number" min="0" max="20" id="sA-${id}" value="${res.sA??''}" placeholder="0" oninput="chkEmp('${id}')">
+      </div>
+    </div>
+    <div class="pen-row${res.pen?' show':''}" id="pr-${id}">
+      <p>¿Quién gana en penaltis?</p>
+      <div class="pen-btns">
+        <button class="pbtn${res.pen&&res.w===hC?' sel':''}" id="pb-H-${id}" onclick="selPen('${id}','H')">${hT.f} ${hT.n}</button>
+        <button class="pbtn${res.pen&&res.w===aC?' sel':''}" id="pb-A-${id}" onclick="selPen('${id}','A')">${aT.f} ${aT.n}</button>
+      </div>
+    </div>
+    <div class="pa-row">
+      <button class="btn-ok" onclick="doConfirm('${id}')">✓ Confirmar</button>
+      <button class="btn-cx" onclick="closePanel('${id}')">✕</button>
+    </div>`;
+  return panel;
+}
+
+function openPanel(id) {
+  if(activePanel&&activePanel!==id) closePanel(activePanel);
+  activePanel=id;
+  const old=document.getElementById('panel-'+id);
+  if(old){ const fr=buildPanel(id); fr.classList.add('open'); fr.id='panel-'+id; old.replaceWith(fr); }
+  chkEmp(id);
+}
+function closePanel(id) {
+  const p=document.getElementById('panel-'+id);
+  if(p) p.classList.remove('open');
+  if(activePanel===id) activePanel=null;
+}
+function chkEmp(id) {
+  const sH=document.getElementById('sH-'+id), sA=document.getElementById('sA-'+id), pr=document.getElementById('pr-'+id);
+  if(!sH||!sA||!pr) return;
+  const show=sH.value!==''&&sA.value!==''&&parseInt(sH.value)===parseInt(sA.value);
+  pr.classList.toggle('show',show);
+}
+function selPen(id,side) {
+  _penSide[id]=side;
+  const hC=getH(id), aC=getA(id);
+  const pbH=document.getElementById('pb-H-'+id), pbA=document.getElementById('pb-A-'+id);
+  if(pbH) pbH.classList.toggle('sel',side==='H');
+  if(pbA) pbA.classList.toggle('sel',side==='A');
+}
+function doConfirm(id) {
+  const inH=document.getElementById('sH-'+id), inA=document.getElementById('sA-'+id);
+  if(!inH||!inA) return;
+  const sH=parseInt(inH.value), sA=parseInt(inA.value);
+  if(isNaN(sH)||isNaN(sA)){ alert('Ingresa ambos marcadores'); return; }
+  const hC=getH(id), aC=getA(id);
+  let w,pen=false;
+  if(sH>sA){ w=hC; }
+  else if(sA>sH){ w=aC; }
+  else {
+    const ps=_penSide[id];
+    if(!ps){ alert('Es empate — elige quién gana en penaltis'); return; }
+    w=ps==='H'?hC:aC; pen=true;
+  }
+  RES[id]={sH,sA,w,pen};
+  closePanel(id); render();
+}
+
+function updateProgress() {
+  const all=Object.keys(MATCHES), total=all.length, done=all.filter(id=>!!RES[id]).length;
+  document.getElementById('pf').style.width=Math.round(done/total*100)+'%';
+  document.getElementById('pl').textContent=done+' / '+total+' partidos completados';
+}
+function updateChamp() {
+  const w=RES['fin']?.w, el=document.getElementById('champ'), nm=document.getElementById('champ-name');
+  if(w){ nm.textContent=gt(w).f+' '+gt(w).n; el.classList.add('show'); }
+  else el.classList.remove('show');
+}
+function toggleRules() {
+  const b=document.getElementById('rules-body'), a=document.getElementById('rules-arrow');
+  b.classList.toggle('open'); a.textContent=b.classList.contains('open')?'▲':'▼';
+}
+
+// ── PDF GENERATION ──
+function buildPDFContent() {
+  const nom=document.getElementById('nombre').value||'Sin nombre';
+  const now=new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'long',year:'numeric'});
+  const all=Object.keys(MATCHES), done=all.filter(id=>!!RES[id]).length;
+
+  document.getElementById('pdf-nombre').textContent=nom;
+  document.getElementById('pdf-fecha').textContent=now;
+  document.getElementById('pdf-fecha2').textContent=now;
+  document.getElementById('pdf-progreso').textContent=done+' / '+all.length+' partidos';
+
+  const cont=document.getElementById('pdf-content');
+  cont.innerHTML='';
+
+  PDF_SECTIONS.forEach(sec=>{
+    const section=document.createElement('div'); section.className='pdf-section';
+    const title=document.createElement('div'); title.className='pdf-section-title';
+    title.textContent=sec.label; section.appendChild(title);
+
+    const table=document.createElement('table'); table.className='pdf-table';
+    table.innerHTML=`<thead><tr>
+      <th></th><th>Local</th><th colspan="3">Marcador</th><th>Visitante</th><th></th>
+      <th>Ganador</th><th>Penaltis</th>
+    </tr></thead>`;
+    const tbody=document.createElement('tbody');
+
+    sec.ids.forEach((id,i)=>{
+      const hC=getH(id), aC=getA(id);
+      const hT=gt(hC), aT=gt(aC);
+      const res=RES[id];
+      const tr=document.createElement('tr');
+      if(res){
+        const winner=gt(res.w);
+        tr.innerHTML=`
+          <td class="td-flag">${hT.f}</td>
+          <td class="td-team">${hT.n}</td>
+          <td class="td-score">${res.sH}</td>
+          <td class="td-vs">—</td>
+          <td class="td-score">${res.sA}</td>
+          <td class="td-team">${aT.n}</td>
+          <td class="td-flag">${aT.f}</td>
+          <td class="td-winner">${winner.f} ${winner.n}</td>
+          <td class="td-pen">${res.pen?'Sí (pen.)':'—'}</td>`;
+      } else {
+        tr.innerHTML=`
+          <td class="td-flag">${hT.f}</td>
+          <td class="td-team">${hC&&hC!=='?'?hT.n:'—'}</td>
+          <td class="td-score td-blank">?</td>
+          <td class="td-vs">—</td>
+          <td class="td-score td-blank">?</td>
+          <td class="td-team">${aC&&aC!=='?'?aT.n:'—'}</td>
+          <td class="td-flag">${aC&&aC!=='?'?aT.f:''}</td>
+          <td class="td-blank" colspan="2">Sin llenar</td>`;
+      }
+      tbody.appendChild(tr);
+    });
+
+    table.appendChild(tbody); section.appendChild(table);
+    cont.appendChild(section);
+  });
+
+  // Champion row
+  const champ=RES['fin']?.w;
+  if(champ){
+    const cDiv=document.createElement('div');
+    cDiv.style.cssText='background:linear-gradient(135deg,#F9A825,#F57F17);color:#fff;border-radius:8px;padding:14px 18px;text-align:center;margin-top:12px;';
+    cDiv.innerHTML=`<div style="font-size:11px;letter-spacing:1px;opacity:.9;margin-bottom:4px;">🏆 CAMPEÓN MUNDIAL 2026</div><div style="font-size:22px;font-weight:700;font-family:Oswald,sans-serif;">${gt(champ).f} ${gt(champ).n}</div>`;
+    cont.appendChild(cDiv);
+  }
+}
+
+function onPDF() {
+  buildPDFContent();
+  document.getElementById('pdf-page').style.display='block';
+  document.querySelector('.hdr').style.display='none';
+  document.querySelector('.nm-wrap').style.display='none';
+  document.querySelector('.prog-wrap').style.display='none';
+  document.querySelector('.rules-wrap').style.display='none';
+  document.querySelector('.bk-scroll').style.display='none';
+  document.querySelector('.champ').style.display='none';
+  document.querySelector('.actions-wrap').style.display='none';
+  window.print();
+  setTimeout(()=>{
+    document.getElementById('pdf-page').style.display='none';
+    document.querySelector('.hdr').style.display='';
+    document.querySelector('.nm-wrap').style.display='';
+    document.querySelector('.prog-wrap').style.display='';
+    document.querySelector('.rules-wrap').style.display='';
+    document.querySelector('.bk-scroll').style.display='';
+    document.querySelector('.champ').style.display='';
+    document.querySelector('.actions-wrap').style.display='';
+  },1000);
+}
+function doPDF(){ closeOvl(); onPDF(); }
+
+// ── WHATSAPP ──
+function genWAText() {
+  const nom=document.getElementById('nombre').value||'Sin nombre';
+  let t='⚽ *QUINIELA MUNDIAL 2026*\n👤 *'+nom+'*\n══════════════════\n\n';
+  PDF_SECTIONS.forEach(sec=>{
+    t+='*'+sec.label.toUpperCase()+'*\n';
+    sec.ids.forEach(id=>{
+      const hC=getH(id), aC=getA(id);
+      const hT=gt(hC), aT=gt(aC);
+      const res=RES[id];
+      t+=hT.f+' '+hT.n+' vs '+aT.n+' '+aT.f+'\n';
+      if(res){
+        t+='  📊 '+res.sH+' - '+res.sA;
+        if(res.pen) t+=' _(pen: '+gt(res.w).n+')_';
+        t+=' → *'+gt(res.w).f+' '+gt(res.w).n+'*\n';
+      } else { t+='  _(sin llenar)_\n'; }
+    });
+    t+='\n';
+  });
+  const ch=RES['fin']?.w;
+  if(ch) t+='👑 *CAMPEÓN: '+gt(ch).f+' '+gt(ch).n+'*\n';
+  t+='\n#Mundial2026 🏆';
+  return t;
+}
+let _waText='';
+function onWA(){ _waText=genWAText(); document.getElementById('modal-p').textContent='Tu quiniela está lista para compartir.'; document.getElementById('ovl').classList.add('vis'); }
+function doWA(){ window.open('https://wa.me/?text='+encodeURIComponent(_waText),'_blank'); closeOvl(); }
+function closeOvl(){ document.getElementById('ovl').classList.remove('vis'); }
+
+// ── INIT ──
+render();
+</script>
+</body>
+</html>
